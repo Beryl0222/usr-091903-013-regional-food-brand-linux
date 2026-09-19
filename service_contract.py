@@ -42,6 +42,14 @@ class ServiceContractTest(unittest.TestCase):
         self.assertEqual(error.exception.code, 404)
         error.exception.close()
 
+    def test_public_summary_endpoint_is_restrained(self):
+        with urlopen(f"{self.base_url}/public/summary", timeout=2) as response:
+            self.assertEqual(response.status, 200)
+            self.assertEqual(response.headers.get_content_type(), "application/json")
+            payload = json.load(response)
+        self.assertEqual(payload["service"], SERVICE_ID)
+        self.assertEqual(set(payload["summary"]), {"stores", "standards", "exits"})
+
 
 if __name__ == "__main__":
     unittest.main()
